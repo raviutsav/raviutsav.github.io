@@ -1,0 +1,31 @@
+{
+  "name": "personalpage",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A minimal, beautiful personal blog and writing website",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "new-post": "node scripts/new-post.js"
+  },
+  "keywords": [
+    "blog",
+    "minimal",
+    "writing",
+    "astro",
+    "static-site"
+  ],
+  "author": "Ravi Utsav",
+  "license": "MIT",
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^5.18.2",
+    "mdast-util-to-string": "^4.0.0",
+    "reading-time": "^1.5.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../config/site';
+import { resolvePath } from '../utils/url';
+---
+
+<BaseLayout
+  title={`Page Not Found — ${siteConfig.name}`}
+  description="The page you are looking for does not exist or has been moved."
+>
+  <div class="container content-column" style="text-align: center; padding: 4rem 0;">
+    <p style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent); margin-bottom: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;">
+      404 Error
+    </p>
+
+    <h1 style="font-size: 2.25rem; font-weight: 600; margin-bottom: 1rem;">
+      Page Not Found
+    </h1>
+
+    <p style="font-size: 1.1rem; color: var(--text-secondary); max-width: 480px; margin: 0 auto 2rem;">
+      The page or article you were looking for doesn't exist, may have moved, or is still being written.
+    </p>
+
+    <div style="display: inline-flex; gap: 1rem; align-items: center;">
+      <a
+        href={resolvePath('/')}
+        style="padding: 0.6rem 1.25rem; border: 1px solid var(--border-color); border-radius: 6px; text-decoration: none; font-size: 0.92rem; font-weight: 500; color: var(--text-primary); background-color: var(--bg-secondary);"
+      >
+        Return to Home
+      </a>
+      <a href={resolvePath('/writing')} style="font-size: 0.92rem; font-weight: 500;">
+        Browse all writing &rarr;
+      </a>
+    </div>
+  </div>
+</BaseLayout>

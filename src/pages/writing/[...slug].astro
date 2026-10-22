@@ -1,0 +1,49 @@
+---
+import { getCollection, render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { calculateReadingTime } from '../../utils/readingTime';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+  // Sort descending: index 0 is newest
+  const sorted = posts.sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+
+  return sorted.map((post, index) => {
+    // Chronologically:
+    // prevPost = older article (index + 1)
+    // nextPost = newer article (index - 1)
+    const nextPost = index > 0 ? sorted[index - 1] : undefined;
+    const prevPost = index < sorted.length - 1 ? sorted[index + 1] : undefined;
+
+    return {
+      params: { slug: post.id },
+      props: {
+        post,
+        prevPost: prevPost ? { slug: prevPost.id, title: prevPost.data.title } : undefined,
+        nextPost: nextPost ? { slug: nextPost.id, title: nextPost.data.title } : undefined,
+      },
+    };
+  });
+}
+
+const { post, prevPost, nextPost } = Astro.props;
+const { Content, remarkPluginFrontmatter } = await render(post);
+const readingTime = remarkPluginFrontmatter?.readingTime || calculateReadingTime(post.body);
+---
+
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  pubDate={post.data.pubDate}
+  updatedDate={post.data.updatedDate}
+  readingTime={readingTime}
+  tags={post.data.tags}
+  prevPost={prevPost}
+  nextPost={nextPost}
+  isSample={post.data.isSample}
+>
+  <Content />
+</PostLayout>

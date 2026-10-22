@@ -1,0 +1,44 @@
+---
+import FormattedDate from './FormattedDate.astro';
+import { resolvePath } from '../utils/url';
+
+export interface Props {
+  slug: string;
+  title: string;
+  description: string;
+  pubDate: Date;
+  readingTime?: string;
+  tags?: string[];
+}
+
+const { slug, title, description, pubDate, readingTime = '3 min read', tags = [] } = Astro.props;
+const articleUrl = resolvePath(`/writing/${slug}`);
+---
+
+<article class="article-item" data-tags={tags.join(',')}>
+  <div class="meta-info" style="margin-bottom: 0.35rem;">
+    <FormattedDate date={pubDate} format="short" />
+    <span class="meta-dot">•</span>
+    <span>{readingTime}</span>
+    {tags && tags.length > 0 && (
+      <>
+        <span class="meta-dot">•</span>
+        <span style="display: inline-flex; gap: 0.35rem;">
+          {tags.map((tag) => (
+            <span class="meta-tag">{tag}</span>
+          ))}
+        </span>
+      </>
+    )}
+  </div>
+
+  <h2>
+    <a href={articleUrl} class="article-title-link">
+      {title}
+    </a>
+  </h2>
+
+  <p class="article-summary">
+    {description}
+  </p>
+</article>

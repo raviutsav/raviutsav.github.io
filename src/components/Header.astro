@@ -1,0 +1,101 @@
+---
+import { siteConfig } from '../config/site';
+import { resolvePath } from '../utils/url';
+
+const pathname = new URL(Astro.request.url).pathname;
+// Remove trailing slash for matching, normalize base path
+const cleanPathname = pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href={resolvePath('/')} class="site-wordmark" aria-label={`${siteConfig.name} - Home`}>
+      <span>{siteConfig.name}</span>
+      <span class="wordmark-dot" aria-hidden="true"></span>
+    </a>
+
+    <div style="display: flex; align-items: center; gap: 1.5rem;">
+      <nav class="site-nav" aria-label="Main Navigation">
+        {siteConfig.navLinks.map((item) => {
+          const resolvedHref = resolvePath(item.href);
+          const cleanItemHref = resolvedHref.replace(/\/$/, '') || '/';
+          const isActive =
+            cleanItemHref === '/'
+              ? cleanPathname === cleanItemHref || cleanPathname === ''
+              : cleanPathname.startsWith(cleanItemHref);
+
+          return (
+            <a
+              href={resolvedHref}
+              class={`nav-link ${isActive ? 'active' : ''}`}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          );
+        })}
+      </nav>
+
+      <!-- Theme Switcher Button -->
+      <button
+        id="theme-toggle"
+        class="theme-toggle-btn"
+        type="button"
+        aria-label="Toggle light or dark theme"
+        title="Toggle color theme"
+      >
+        <!-- Sun icon (shown in dark mode) -->
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <!-- Moon icon (shown in light mode) -->
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  function setupThemeToggle() {
+    const toggleBtn = document.getElementById('theme-toggle');
+    if (!toggleBtn) return;
+
+    const sunIcon = toggleBtn.querySelector('.sun-icon');
+    const moonIcon = toggleBtn.querySelector('.moon-icon');
+
+    function syncIcons() {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      if (currentTheme === 'dark') {
+        if (sunIcon) sunIcon.style.display = 'block';
+        if (moonIcon) moonIcon.style.display = 'none';
+      } else {
+        if (sunIcon) sunIcon.style.display = 'none';
+        if (moonIcon) moonIcon.style.display = 'block';
+      }
+    }
+
+    syncIcons();
+
+    toggleBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const target = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', target);
+      localStorage.setItem('theme', target);
+      syncIcons();
+    });
+  }
+
+  // Setup on initial load & after any Astro view navigation
+  setupThemeToggle();
+  document.addEventListener('astro:after-swap', setupThemeToggle);
+</script>

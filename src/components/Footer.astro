@@ -1,0 +1,23 @@
+---
+import { siteConfig } from '../config/site';
+import { resolvePath } from '../utils/url';
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <span>© {currentYear} {siteConfig.author}. Written and published with care.</span>
+    </div>
+
+    <div class="footer-links">
+      <a href={siteConfig.socialLinks.github} class="footer-link" target="_blank" rel="noopener noreferrer">
+        GitHub
+      </a>
+      <a href={siteConfig.socialLinks.linkedin} class="footer-link" target="_blank" rel="noopener noreferrer">
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</footer>

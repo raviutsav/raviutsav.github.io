@@ -1,0 +1,198 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { calculateReadingTime } from '../../utils/readingTime';
+import { siteConfig } from '../../config/site';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// Collect unique tags
+const allTags = Array.from(
+  new Set(sortedPosts.flatMap((post) => post.data.tags || []))
+).sort();
+---
+
+<BaseLayout
+  title={`Writing — ${siteConfig.name}`}
+  description="Essays, technical notes, and reflections on software engineering, simplicity, and craftsmanship."
+>
+  <div class="container content-column">
+    <header style="margin-bottom: 2.5rem;">
+      <h1 style="font-size: 2.25rem; font-weight: 600; margin-bottom: 0.65rem;">
+        Writing
+      </h1>
+      <p style="font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 0;">
+        A chronological archive of essays, architectural notes, and personal reflections.
+      </p>
+    </header>
+
+    <!-- Search & Filter Controls -->
+    <div class="filter-bar">
+      <div class="search-input-wrapper">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="search"
+          id="post-search"
+          class="search-input"
+          placeholder="Filter by title, description, or keyword..."
+          aria-label="Filter articles by title or keyword"
+        />
+      </div>
+
+      {allTags.length > 0 && (
+        <div class="tag-list" role="group" aria-label="Filter by tag">
+          <button type="button" class="tag-button active" data-tag="all">
+            All ({sortedPosts.length})
+          </button>
+          {allTags.map((tag) => (
+            <button type="button" class="tag-button" data-tag={tag.toLowerCase()}>
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    <!-- Article Listings -->
+    <div id="articles-container" class="article-list">
+      {sortedPosts.map((post) => {
+        const readingTime = calculateReadingTime(post.body);
+        return (
+          <ArticleCard
+            slug={post.id}
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            readingTime={readingTime}
+            tags={post.data.tags}
+          />
+        );
+      })}
+    </div>
+
+    <!-- Empty State for Search -->
+    <div id="no-results" style="display: none; padding: 3rem 0; text-align: center; color: var(--text-muted);">
+      <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No writing found matching your filter.</p>
+      <button
+        type="button"
+        id="reset-filter"
+        style="background: none; border: 1px solid var(--border-color); color: var(--accent); padding: 0.4rem 0.85rem; border-radius: 4px; cursor: pointer; font-size: 0.9rem;"
+      >
+        Clear filters
+      </button>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  function setupWritingFilter() {
+    const searchInput = document.getElementById('post-search');
+    const tagButtons = document.querySelectorAll('.tag-button');
+    const articles = document.querySelectorAll('.article-item');
+    const noResults = document.getElementById('no-results');
+    const resetBtn = document.getElementById('reset-filter');
+
+    let currentTag = 'all';
+    let currentSearch = '';
+
+    // Check URL parameters for ?tag=...
+    const urlParams = new URLSearchParams(window.location.search);
+    const tagParam = urlParams.get('tag');
+    if (tagParam) {
+      currentTag = tagParam.toLowerCase();
+      tagButtons.forEach((btn) => {
+        if (btn.getAttribute('data-tag') === currentTag) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    function applyFilters() {
+      let visibleCount = 0;
+
+      articles.forEach((article) => {
+        const title = article.querySelector('.article-title-link')?.textContent?.toLowerCase() || '';
+        const summary = article.querySelector('.article-summary')?.textContent?.toLowerCase() || '';
+        const tags = (article.getAttribute('data-tags') || '').toLowerCase().split(',');
+
+        const matchesSearch =
+          !currentSearch ||
+          title.includes(currentSearch) ||
+          summary.includes(currentSearch);
+
+        const matchesTag =
+          currentTag === 'all' ||
+          tags.some((t) => t.trim() === currentTag);
+
+        if (matchesSearch && matchesTag) {
+          article.style.display = '';
+          visibleCount++;
+        } else {
+          article.style.display = 'none';
+        }
+      });
+
+      if (noResults) {
+        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        currentSearch = e.target.value.toLowerCase().trim();
+        applyFilters();
+      });
+    }
+
+    tagButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        tagButtons.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTag = btn.getAttribute('data-tag') || 'all';
+
+        // Update URL without page reload
+        const newUrl = new URL(window.location);
+        if (currentTag === 'all') {
+          newUrl.searchParams.delete('tag');
+        } else {
+          newUrl.searchParams.set('tag', currentTag);
+        }
+        window.history.replaceState({}, '', newUrl);
+
+        applyFilters();
+      });
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (searchInput) searchInput.value = '';
+        currentSearch = '';
+        currentTag = 'all';
+        tagButtons.forEach((b) => {
+          if (b.getAttribute('data-tag') === 'all') b.classList.add('active');
+          else b.classList.remove('active');
+        });
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('tag');
+        window.history.replaceState({}, '', newUrl);
+        applyFilters();
+      });
+    }
+
+    // Initial run
+    applyFilters();
+  }
+
+  setupWritingFilter();
+  document.addEventListener('astro:after-swap', setupWritingFilter);
+</script>

@@ -1,0 +1,87 @@
+---
+import { siteConfig } from '../config/site';
+import { resolvePath } from '../utils/url';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  articleDate?: Date;
+}
+
+const {
+  title = siteConfig.title,
+  description = siteConfig.description,
+  image = resolvePath('/favicon.svg'),
+  articleDate,
+} = Astro.props;
+
+// Canonical URL computation
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || siteConfig.url);
+const ogImageURL = new URL(image, Astro.site || siteConfig.url);
+
+const gaId = siteConfig.googleAnalyticsId;
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href={resolvePath('/favicon.svg')} />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+<meta name="author" content={siteConfig.author} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={articleDate ? 'article' : 'website'} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImageURL} />
+<meta property="og:site_name" content={siteConfig.name} />
+{articleDate && <meta property="article:published_time" content={articleDate.toISOString()} />}
+
+<!-- Twitter Card -->
+<meta property="twitter:card" content="summary" />
+<meta property="twitter:url" content={canonicalURL} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={ogImageURL} />
+
+<!-- Sitemap -->
+<link rel="sitemap" href={resolvePath('/sitemap-index.xml')} />
+
+<!-- Preconnect to Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+<!-- Prevent Theme Flash (FOUC) Script -->
+<script is:inline>
+  (function () {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+
+<!-- Google Analytics 4 (Only loaded if a valid Measurement ID is configured) -->
+{gaId && (
+  <>
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+    <script is:inline define:vars={{ gaId }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', gaId, { anonymize_ip: true });
+    </script>
+  </>
+)}

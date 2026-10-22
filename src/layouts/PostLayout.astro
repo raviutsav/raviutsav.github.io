@@ -1,0 +1,113 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { resolvePath } from '../utils/url';
+
+export interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  readingTime?: string;
+  tags?: string[];
+  prevPost?: { slug: string; title: string };
+  nextPost?: { slug: string; title: string };
+  isSample?: boolean;
+}
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  readingTime = '4 min read',
+  tags = [],
+  prevPost,
+  nextPost,
+  isSample = false,
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} articleDate={pubDate}>
+  <div class="container content-column">
+    <nav aria-label="Breadcrumb">
+      <a href={resolvePath('/writing')} class="back-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Back to all writing</span>
+      </a>
+    </nav>
+
+    {isSample && (
+      <div class="sample-notice" role="note">
+        <strong>Sample Article:</strong> This essay serves as an aesthetic and formatting reference. You can replace or delete it in <code>src/content/blog/</code>.
+      </div>
+    )}
+
+    <header style="margin-bottom: 2.25rem;">
+      <div class="meta-info" style="margin-bottom: 0.75rem;">
+        <FormattedDate date={pubDate} format="long" />
+        <span class="meta-dot">•</span>
+        <span>{readingTime}</span>
+        {updatedDate && (
+          <>
+            <span class="meta-dot">•</span>
+            <span>Updated <FormattedDate date={updatedDate} format="short" /></span>
+          </>
+        )}
+      </div>
+
+      <h1 style="font-size: 2.45rem; line-height: 1.2; margin-bottom: 0.85rem; letter-spacing: -0.02em;">
+        {title}
+      </h1>
+
+      {description && (
+        <p style="font-size: 1.15rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 1.25rem;">
+          {description}
+        </p>
+      )}
+
+      {tags && tags.length > 0 && (
+        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+          {tags.map((tag) => (
+            <a href={`${resolvePath('/writing')}?tag=${encodeURIComponent(tag)}`} class="meta-tag">
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <hr style="margin: 1.75rem 0 2.5rem;" />
+
+    <!-- Article prose content -->
+    <article class="prose">
+      <slot />
+    </article>
+
+    <!-- Post Navigation: Previous & Next -->
+    {(prevPost || nextPost) && (
+      <nav class="post-nav" aria-label="Articles navigation">
+        {prevPost ? (
+          <a href={resolvePath(`/writing/${prevPost.slug}`)} class="post-nav-card">
+            <span class="post-nav-label">← Previous Article</span>
+            <span class="post-nav-title">{prevPost.title}</span>
+          </a>
+        ) : (
+          <div></div>
+        )}
+
+        {nextPost ? (
+          <a href={resolvePath(`/writing/${nextPost.slug}`)} class="post-nav-card" style="text-align: right;">
+            <span class="post-nav-label">Next Article →</span>
+            <span class="post-nav-title">{nextPost.title}</span>
+          </a>
+        ) : (
+          <div></div>
+        )}
+      </nav>
+    )}
+  </div>
+</BaseLayout>

@@ -1,0 +1,67 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../config/site";
+import { resolvePath } from "../utils/url";
+---
+
+<BaseLayout
+  title={`About — ${siteConfig.name}`}
+  description={`About ${siteConfig.name}: software engineer, writer, and thinker.`}
+>
+  <div class="container content-column">
+    <header style="margin-bottom: 2.5rem;">
+      <h1 style="font-size: 2.25rem; font-weight: 600; margin-bottom: 0.65rem;">
+        About
+      </h1>
+      <p
+        style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 0;"
+      >
+        A little about who I am, what I build, and what interests me.
+      </p>
+    </header>
+
+    <div class="about-content">
+      <p>
+        Hello, I'm <strong>{siteConfig.author}</strong>. I'm a software engineer
+        interested in backend systems, distributed computing, and the evolving
+        world of AI. I enjoy understanding how things work beneath the surface
+        and building systems that are reliable, useful, and thoughtfully
+        designed.
+      </p>
+
+      <p>
+        This website is my personal notebook on the open web — a place for
+        technical deep dives, lessons from building software, and reflections on
+        work, life, and the things I'm still figuring out.
+      </p>
+
+      <h2>Get in Touch</h2>
+
+      <p>
+        I'm always happy to exchange ideas, discuss engineering, or hear a
+        different perspective on something I've written. If something here got
+        you thinking, or you're curious about a topic I'm exploring, feel free
+        to reach out.
+      </p>
+
+      <ul>
+        <li>
+          <strong>GitHub:</strong>
+          <a
+            href={siteConfig.socialLinks.github}
+            target="_blank"
+            rel="noopener noreferrer">github.com/raviutsav</a
+          >
+        </li>
+        <li>
+          <strong>LinkedIn:</strong>
+          <a
+            href={siteConfig.socialLinks.linkedin}
+            target="_blank"
+            rel="noopener noreferrer">linkedin.com/in/raviutsav</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</BaseLayout>

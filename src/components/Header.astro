@@ -7,15 +7,16 @@ const pathname = new URL(Astro.request.url).pathname;
 const cleanPathname = pathname.replace(/\/$/, '') || '/';
 ---
 
-<header class="site-header">
+<header class="site-header" id="site-header">
   <div class="container header-inner">
     <a href={resolvePath('/')} class="site-wordmark" aria-label={`${siteConfig.name} - Home`}>
       <span>{siteConfig.name}</span>
       <span class="wordmark-dot" aria-hidden="true"></span>
     </a>
 
-    <div style="display: flex; align-items: center; gap: 1.5rem;">
-      <nav class="site-nav" aria-label="Main Navigation">
+    <div class="header-actions">
+      <!-- Desktop Navigation -->
+      <nav class="site-nav desktop-nav" aria-label="Main Navigation">
         {siteConfig.navLinks.map((item) => {
           const resolvedHref = resolvePath(item.href);
           const cleanItemHref = resolvedHref.replace(/\/$/, '') || '/';
@@ -61,8 +62,64 @@ const cleanPathname = pathname.replace(/\/$/, '') || '/';
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
+
+      <!-- Mobile Hamburger Button -->
+      <button
+        id="mobile-menu-toggle"
+        class="mobile-menu-btn"
+        type="button"
+        aria-label="Toggle mobile navigation menu"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+      >
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
     </div>
   </div>
+
+  <!-- Mobile Dropdown Navigation -->
+  <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile Navigation">
+    <div class="container mobile-nav-inner">
+      <div class="mobile-nav-links">
+        {siteConfig.navLinks.map((item) => {
+          const resolvedHref = resolvePath(item.href);
+          const cleanItemHref = resolvedHref.replace(/\/$/, '') || '/';
+          const isActive =
+            cleanItemHref === '/'
+              ? cleanPathname === cleanItemHref || cleanPathname === ''
+              : cleanPathname.startsWith(cleanItemHref);
+
+          return (
+            <a
+              href={resolvedHref}
+              class={`mobile-nav-link ${isActive ? 'active' : ''}`}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <span>{item.label}</span>
+              {isActive && <span class="mobile-nav-dot" aria-hidden="true">•</span>}
+            </a>
+          );
+        })}
+      </div>
+
+      <div class="mobile-nav-footer">
+        <span class="mobile-nav-footer-label">Connect</span>
+        <div class="mobile-social-links">
+          {siteConfig.socialLinks.github && (
+            <a href={siteConfig.socialLinks.github} target="_blank" rel="noopener noreferrer">
+              GitHub ↗
+            </a>
+          )}
+          {siteConfig.socialLinks.linkedin && (
+            <a href={siteConfig.socialLinks.linkedin} target="_blank" rel="noopener noreferrer">
+              LinkedIn ↗
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  </nav>
 </header>
 
 <script is:inline>
@@ -95,7 +152,56 @@ const cleanPathname = pathname.replace(/\/$/, '') || '/';
     });
   }
 
+  function setupMobileMenu() {
+    const header = document.getElementById('site-header');
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+    if (!header || !toggleBtn || !mobileNav) return;
+
+    function closeMenu() {
+      header.classList.remove('menu-open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleMenu() {
+      const isOpen = header.classList.toggle('menu-open');
+      toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    }
+
+    // Reset state
+    closeMenu();
+
+    toggleBtn.onclick = (e) => {
+      e.stopPropagation();
+      toggleMenu();
+    };
+
+    // Close when clicking any link inside mobile nav
+    const navLinks = mobileNav.querySelectorAll('a');
+    navLinks.forEach((link) => {
+      link.onclick = () => closeMenu();
+    });
+
+    // Close on click outside
+    document.onclick = (e) => {
+      if (!header.contains(e.target)) {
+        closeMenu();
+      }
+    };
+
+    // Close on Escape key
+    document.onkeydown = (e) => {
+      if (e.key === 'Escape' && header.classList.contains('menu-open')) {
+        closeMenu();
+      }
+    };
+  }
+
   // Setup on initial load & after any Astro view navigation
   setupThemeToggle();
-  document.addEventListener('astro:after-swap', setupThemeToggle);
+  setupMobileMenu();
+  document.addEventListener('astro:after-swap', () => {
+    setupThemeToggle();
+    setupMobileMenu();
+  });
 </script>

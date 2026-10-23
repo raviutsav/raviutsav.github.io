@@ -1,6 +1,9 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { remarkReadingTime } from './src/utils/remark-reading-time.mjs';
+import { remarkMathCompat } from './src/utils/remark-math-compat.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -10,7 +13,8 @@ export default defineConfig({
   base: process.env.BASE_PATH || '/',
   integrations: [sitemap()],
   markdown: {
-    remarkPlugins: [remarkReadingTime],
+    remarkPlugins: [remarkReadingTime, remarkMathCompat, remarkMath],
+    rehypePlugins: [rehypeKatex],
     shikiConfig: {
       themes: {
         light: 'github-light',

@@ -19,8 +19,9 @@ An editorial, typography-focused personal website designed for writing and publi
 - **Writing (`/writing`)**: Complete chronological archive with instant, zero-dependency search and tag filtering.
 - **Individual Post (`/writing/[slug]`)**: Reading-optimized layout with breadcrumb navigation, publication metadata, automatic reading time, syntax-highlighted code blocks, tables, blockquotes, and previous/next article navigation.
 - **About (`/about`)**: Biography, core interests, stack colophon, and contact links (GitHub and LinkedIn).
-- **404 (`/404`)**: Clean, helpful page for missing URLs.
-- **Sitemap (`/sitemap-index.xml`)**: Automatic search engine sitemap.
+- **404 (`/404`)**: Clean, helpful page for missing URLs (`noindex`).
+- **RSS Feed (`/rss.xml`)**: Automatic XML feed of all published posts sorted newest-first, with `<head>` autodiscovery.
+- **Sitemap (`/sitemap-index.xml`) & `robots.txt` (`/robots.txt`)**: Automatic search engine sitemap and crawl directives.
 
 ---
 
@@ -163,3 +164,37 @@ Global configuration settings are located in [src/config/site.ts](file:///d:/Wor
 - Social links (GitHub, LinkedIn)
 - Site description and title format
 - Navigation links
+- Buttondown newsletter username and optional Google Search Console verification token
+
+---
+
+## Discoverability, SEO & Google Search Console
+
+### 1. Register in Google Search Console
+
+1. Open [Google Search Console](https://search.google.com/search-console) and sign in.
+2. Click **Add property** and choose **URL prefix** with `https://raviutsav.github.io/`.
+3. Under **Verify ownership**, select **HTML tag** and copy only the token inside `content="..."` (for example `abc123...`).
+4. Provide that verification token without hardcoding secrets:
+   - **Locally**: add `PUBLIC_GOOGLE_SITE_VERIFICATION=your-token` to `.env`.
+   - **GitHub Actions**: add a repository secret named `PUBLIC_GOOGLE_SITE_VERIFICATION` under **Settings** &rarr; **Secrets and variables** &rarr; **Actions**, then push or re-run the deploy workflow.
+   - *(Alternatively, if you prefer editing code directly, set `googleSiteVerification` in [src/config/site.ts](file:///d:/Work/personalpage/src/config/site.ts), which renders `<meta name="google-site-verification" ...>` in [src/components/BaseHead.astro](file:///d:/Work/personalpage/src/components/BaseHead.astro).)*
+5. Once deployed, click **Verify** in Google Search Console.
+
+### 2. Submit the Sitemap
+
+1. In Google Search Console, open **Indexing** &rarr; **Sitemaps**.
+2. Enter `sitemap-index.xml` (full URL: `https://raviutsav.github.io/sitemap-index.xml`) and click **Submit**.
+3. Verify that `/robots.txt` (`https://raviutsav.github.io/robots.txt`) is reachable and references `https://raviutsav.github.io/sitemap-index.xml`.
+
+---
+
+## Newsletter Integration (Buttondown)
+
+Individual article pages include a minimal email subscription form at the bottom ([src/components/Newsletter.astro](file:///d:/Work/personalpage/src/components/Newsletter.astro)) powered by [Buttondown](https://buttondown.com/).
+
+1. Create a Buttondown account and choose your newsletter username (e.g., `raviutsav`).
+2. Configure your username in either of these places:
+   - **Environment / GitHub Actions**: set `PUBLIC_BUTTONDOWN_USERNAME=your-username` in `.env` locally and as a repository secret (`PUBLIC_BUTTONDOWN_USERNAME`) in GitHub Actions.
+   - **Directly in config**: replace `"YOUR_BUTTONDOWN_USERNAME"` in [src/config/site.ts](file:///d:/Work/personalpage/src/config/site.ts).
+3. Subscribers will be directed to Buttondown's hosted confirmation endpoint (`https://buttondown.com/api/emails/embed-subscribe/<username>`) with zero backend code or exposed API keys.

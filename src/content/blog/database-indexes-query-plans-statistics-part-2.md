@@ -6,6 +6,16 @@ tags: ["Databases", "Backend Engineering", "SQL"]
 featured: false
 ---
 
+## Table of Contents
+
+- [The Same Query, Two Different Costs](#the-same-query-two-different-costs)
+- [How Does the Database Know What to Choose?](#how-does-the-database-know-what-to-choose)
+- [What Are Statistics?](#what-are-statistics)
+- [How Statistics Influence the Query Plan](#how-statistics-influence-the-query-plan)
+- [Why Does the Database Cache Query Plans?](#why-does-the-database-cache-query-plans)
+- [What Happens When Statistics Become Stale?](#what-happens-when-statistics-become-stale)
+- [Bringing It All Together](#bringing-it-all-together)
+
 In [Part 1](https://raviutsav.github.io/writing/database-indexes-first-principles-part-1/), we explored how database indexes work internally, from pages and B+ trees to clustered and non-clustered indexes.
 
 We also established an important idea: an index helps the database avoid scanning every row when searching for data.

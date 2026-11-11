@@ -10,15 +10,34 @@ export interface Props {
   description?: string;
   image?: string;
   articleDate?: Date;
+  articleModifiedDate?: Date;
+  articleTags?: string[];
+  noindex?: boolean;
 }
 
-const { title, description, image, articleDate } = Astro.props;
+const {
+  title,
+  description,
+  image,
+  articleDate,
+  articleModifiedDate,
+  articleTags,
+  noindex,
+} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={title} description={description} image={image} articleDate={articleDate} />
+    <BaseHead
+      title={title}
+      description={description}
+      image={image}
+      articleDate={articleDate}
+      articleModifiedDate={articleModifiedDate}
+      articleTags={articleTags}
+      noindex={noindex}
+    />
   </head>
   <body>
     <Header />

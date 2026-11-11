@@ -11,6 +11,14 @@ tags:
 title: "Database Indexes: Understanding Joins - Part 3"
 ---
 
+## Table of Contents
+
+- [The problem: joining two tables](#the-problem-joining-two-tables)
+- [1. Nested Loop Join](#1-nested-loop-join)
+- [2. Hash Join](#2-hash-join)
+- [3. Merge Join](#3-merge-join)
+- [So, which join algorithm is the best?](#so-which-join-algorithm-is-the-best)
+
 In [Part 1](/writing/database-indexes-first-principles-part-1/), we
 looked at how indexes work internally, from pages and B+ trees to
 clustered and non-clustered indexes.

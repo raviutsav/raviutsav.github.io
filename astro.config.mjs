@@ -11,7 +11,11 @@ export default defineConfig({
   // Set SITE_URL in .env or CI environment when deploying
   site: process.env.SITE_URL || 'https://raviutsav.github.io',
   base: process.env.BASE_PATH || '/',
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      filter: (page) => !page.endsWith('/404') && !page.endsWith('/404.html'),
+    }),
+  ],
   markdown: {
     remarkPlugins: [remarkReadingTime, remarkMathCompat, remarkMath],
     rehypePlugins: [rehypeKatex],

@@ -1,6 +1,8 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import Newsletter from '../components/Newsletter.astro';
+import { siteConfig } from '../config/site';
 import { resolvePath } from '../utils/url';
 
 export interface Props {
@@ -26,9 +28,19 @@ const {
   nextPost,
   isSample = false,
 } = Astro.props;
+
+const pageTitle = title.endsWith(siteConfig.name)
+  ? title
+  : `${title} — ${siteConfig.name}`;
 ---
 
-<BaseLayout title={title} description={description} articleDate={pubDate}>
+<BaseLayout
+  title={pageTitle}
+  description={description}
+  articleDate={pubDate}
+  articleModifiedDate={updatedDate}
+  articleTags={tags}
+>
   <div class="container content-column">
     <nav aria-label="Breadcrumb">
       <a href={resolvePath('/writing')} class="back-link">
@@ -86,6 +98,9 @@ const {
     <article class="prose">
       <slot />
     </article>
+
+    <!-- Email Newsletter Subscription -->
+    <Newsletter />
 
     <!-- Post Navigation: Previous & Next -->
     {(prevPost || nextPost) && (

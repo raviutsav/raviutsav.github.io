@@ -2,7 +2,7 @@
 title: "So You Think You Understand Database Indexes? Part 1"
 description: "A first-principles look at database pages, B+ trees, clustered and nonclustered indexes, key lookups, and why an index seek is not always faster than a scan."
 pubDate: 2026-10-24
-tags: ["Databases", "SQL", "Backend Engineering"]
+tags: ["Databases", "Backend Engineering", "SQL"]
 featured: true
 isSample: false
 ---

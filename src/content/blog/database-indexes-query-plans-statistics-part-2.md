@@ -2,7 +2,7 @@
 title: "Database Indexes: Query Plans and Statistics - Part 2"
 description: "Understanding how databases choose between index seeks and table scans, how statistics influence query execution plans, and why cached plans can sometimes go wrong."
 pubDate: 2026-11-05
-tags: ["Database", "Engineering", "SQL"]
+tags: ["Databases", "Backend Engineering", "SQL"]
 featured: false
 ---
 

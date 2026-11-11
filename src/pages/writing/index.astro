@@ -2,13 +2,20 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
-import { calculateReadingTime } from '../../utils/readingTime';
+import { getPostReadingTime } from '../../utils/readingTime';
 import { siteConfig } from '../../config/site';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 
 const sortedPosts = allPosts.sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const postsWithReadingTime = await Promise.all(
+  sortedPosts.map(async (post) => ({
+    post,
+    readingTime: await getPostReadingTime(post),
+  }))
 );
 
 // Collect unique tags
@@ -63,19 +70,16 @@ const allTags = Array.from(
 
     <!-- Article Listings -->
     <div id="articles-container" class="article-list">
-      {sortedPosts.map((post) => {
-        const readingTime = calculateReadingTime(post.body);
-        return (
-          <ArticleCard
-            slug={post.id}
-            title={post.data.title}
-            description={post.data.description}
-            pubDate={post.data.pubDate}
-            readingTime={readingTime}
-            tags={post.data.tags}
-          />
-        );
-      })}
+      {postsWithReadingTime.map(({ post, readingTime }) => (
+        <ArticleCard
+          slug={post.id}
+          title={post.data.title}
+          description={post.data.description}
+          pubDate={post.data.pubDate}
+          readingTime={readingTime}
+          tags={post.data.tags}
+        />
+      ))}
     </div>
 
     <!-- Empty State for Search -->

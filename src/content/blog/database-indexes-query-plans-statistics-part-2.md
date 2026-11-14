@@ -529,3 +529,7 @@ The thing I find particularly interesting here is that an index is not automatic
 An index gives the database another way to access data. Whether that access path is useful depends on how much data needs to be retrieved and how expensive it is to retrieve it.
 
 And that's where statistics and query plans become important.
+
+---
+
+*A note on writing: The ideas, structure, and decisions on what to cover and in how much depth are entirely my own. The prose was articulated and drafted with the assistance of a large language model (LLM), and reviewed by me for accuracy.*

@@ -482,3 +482,7 @@ in a different situation.
 | Nested Loop Join | For each row in one input, search for matching rows in the other | One input is small, especially when the other has a useful index |
 | Hash Join | Build a hash table from one input and probe it using the other | Both inputs are large and the join uses equality |
 | Merge Join | Walk through two sorted inputs and match their keys | Both inputs are already sorted, or sorting them is cost-effective |
+
+---
+
+*A note on writing: The ideas, structure, and decisions on what to cover and in how much depth are entirely my own. The prose was articulated and drafted with the assistance of a large language model (LLM), and reviewed by me for accuracy.*

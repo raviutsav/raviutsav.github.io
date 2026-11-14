@@ -347,3 +347,7 @@ An index is not magic. It is another data structure that helps the database do l
 And sometimes, the best way to optimize a query isn't to add another index. It's to understand where the database is spending its time and why.
 
 That's the difference between knowing what indexes are and understanding how to use them.
+
+---
+
+*A note on writing: The ideas, structure, and decisions on what to cover and in how much depth are entirely my own. The prose was articulated and drafted with the assistance of a large language model (LLM), and reviewed by me for accuracy.*
